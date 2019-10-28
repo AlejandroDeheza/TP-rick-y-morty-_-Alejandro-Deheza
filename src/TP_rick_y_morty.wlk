@@ -1,8 +1,11 @@
+class PepinilloException inherits Exception { }
+
 class Rick {
 
 	const familiares = #{ morty, summer, beth, jerry }
 	var demencia = 40 // valor arbitrario
 	var acompaniante = null
+	var esPepinillo = false
 
 	method elegirAcompaniante() {
 		acompaniante = familiares.anyOne()
@@ -13,7 +16,12 @@ class Rick {
 	}
 
 	method convertirseEnPepinillo() {
-		demencia /= 2
+		if (!esPepinillo){
+			demencia /= 2
+			esPepinillo = true			
+		}else{
+			throw new PepinilloException( message = "Rick ya es un Pepinillo")
+		}
 	}
 
 	method alcanzaDemenciaLimite() {
@@ -25,8 +33,7 @@ class Rick {
 			self.elegirAcompaniante()
 		}
 		if (!self.alcanzaDemenciaLimite() && acompaniante.puedeIrDeAventura()) {
-			acompaniante.alterar()
-			self.alterarDemencia(acompaniante.variacionDemeciaDeRick())
+			acompaniante.acompaniarEnAventura()
 		} else {
 			self.convertirseEnPepinillo()
 		}
@@ -43,53 +50,39 @@ object fecha {
 class Morty {
 
 	var saludMental = 60 // valor arbitrario
-	var variacionDemeciaDeRick = 50
+	const property variacionDemeciaDeRick = 50
 
-	method variacionDemeciaDeRick() = variacionDemeciaDeRick
-
-	method alterar() {
+	method acompaniarEnAventura() {
 		saludMental -= 30
+		rick.alterarDemencia(variacionDemeciaDeRick)
 	}
 
 	method puedeIrDeAventura() = true
 
 }
 
-class Summer {
-
-	var afectoPorRick = 70 // valor arbitrario
-	var variacionDemeciaDeRick = -20
-
-	method variacionDemeciaDeRick() = variacionDemeciaDeRick
-
-	method alterar() {
-		afectoPorRick += 10
-	}
-
-	method puedeIrDeAventura() = fecha.hoy().internalDayOfWeek() == 3
-
-}
-
-class Beth {
-
+class MujerDeFamilia {
+	
 	var afectoPorRick = 80 // valor arbitrario
-	var variacionDemeciaDeRick = -20
+	const property variacionDemeciaDeRick = -20
 
-	method variacionDemeciaDeRick() = variacionDemeciaDeRick
-
-	method alterar() {
+	method acompaniarEnAventura() {
 		afectoPorRick += 10
+		rick.alterarDemencia(variacionDemeciaDeRick)
 	}
 
 	method puedeIrDeAventura() = true
+}
+
+class Summer inherits MujerDeFamilia{
+
+	override method puedeIrDeAventura() = fecha.hoy().internalDayOfWeek() == 3
 
 }
 
 class Jerry {
 
-	var variacionDemeciaDeRick = 0
-
-	method variacionDemeciaDeRick() = variacionDemeciaDeRick
+	const property variacionDemeciaDeRick = 0
 
 	method puedeIrDeAventura() = false
 
@@ -109,7 +102,7 @@ object summer inherits Summer {
 
 }
 
-object beth inherits Beth {
+object beth inherits MujerDeFamilia {
 
 }
 
